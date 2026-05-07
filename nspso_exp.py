@@ -1,17 +1,22 @@
+import argparse
 import sys
 import math
 import time
 import random
 import numpy as np
+from gpu_utils import xp, has_gpu
 import os
 
-if len(sys.argv) > 1:
-    dataset = sys.argv[1]
-else:
-    dataset = "100_0"
+parser = argparse.ArgumentParser()
+parser.add_argument("dataset", nargs="?", default="100_0")
+parser.add_argument("--gpu", action="store_true", help="use GPU backend when available")
+args = parser.parse_args()
+
+dataset = args.dataset
+USE_GPU = args.gpu and has_gpu
 
 input_file = f"./dataset/{dataset}.txt"
-print("-nspso", dataset)
+print("-nspso", dataset, "backend=GPU" if USE_GPU else "backend=CPU")
 
 x_corr = np.loadtxt(input_file, dtype=int)
 num_sensor = len(x_corr)
@@ -138,13 +143,25 @@ def evaluate(gene):
     cached = eval_cache.get(key)
     if cached is not None:
         return cached
-
     all_r_u = radius_formalize(gene)
     total_active_sensor = int(np.sum(gene))
-    total_energy_consumption = 0.0
-    for r in all_r_u:
-        if r > 0:
-            total_energy_consumption += calc_energy_consumption(r)
+
+    if USE_GPU:
+        arr = xp.asarray(all_r_u, dtype=xp.float64)
+        # calc_energy_consumption elementwise: term1 + term2 + term3
+        term1 = 0.5 * (k_minus_1 * arr) ** 2
+        exp_beta = xp.exp(-beta * arr)
+        term2 = (1 - exp_beta * (1 + beta * arr)) / (beta ** 2)
+        term3 = (k_minus_1 * arr * (1 - exp_beta)) / beta
+        energy_arr = term1 + term2 + term3
+        # sum only positive radii entries
+        total_energy_consumption = float(xp.sum(energy_arr[arr > 0]))
+    else:
+        # fallback to Python loop
+        total_energy_consumption = 0.0
+        for r in all_r_u:
+            if r > 0:
+                total_energy_consumption += calc_energy_consumption(r)
 
     result = (total_active_sensor, total_energy_consumption)
     eval_cache[key] = result
