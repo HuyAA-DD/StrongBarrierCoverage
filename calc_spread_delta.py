@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 
 run_start = 0
 run_end = 10
-base_link = "./result/pareto/moead/moead_"
+base_link_moead = "./result/pareto/moead/moead_"
+base_link_nsga = "./result/pareto/nsga/nsga_"
+base_link_nspso = "./result/pareto/nspso/nspso_"
 datasets = ["100_1", "150_1", "200_1", "250_1"]
 
 
@@ -41,22 +43,57 @@ def spread_metric(pareto_front):
     return spread
 
 
-spread_values_per_dataset = []
+spread_values_per_dataset_moead = []
+spread_values_per_dataset_nsga = []
+spread_values_per_dataset_nspso = []
 
 for dataset in datasets:
-    spread_values = []
+    spread_values_moead = []
+    spread_values_nsga = []
+    spread_values_nspso = []
     for run in range(run_start, run_end):
-        input_file = f"{base_link}{dataset}_{run}.csv"
-        pareto_front = np.loadtxt(input_file, dtype=float, delimiter=",")
-        spread_value = spread_metric(pareto_front)
-        spread_values.append(spread_value)
+        pareto_front_moead = np.loadtxt(f"{base_link_moead}{dataset}_{run}.csv", dtype=float, delimiter=",")
+        pareto_front_nsga = np.loadtxt(f"{base_link_nsga}{dataset}_{run}.csv", dtype=float, delimiter=",")
+        pareto_front_nspso = np.loadtxt(f"{base_link_nspso}{dataset}_{run}.csv", dtype=float, delimiter=",")
 
-    spread_values_per_dataset.append(spread_values)
+        spread_values_moead.append(spread_metric(pareto_front_moead))
+        spread_values_nsga.append(spread_metric(pareto_front_nsga))
+        spread_values_nspso.append(spread_metric(pareto_front_nspso))
+
+    spread_values_per_dataset_moead.append(spread_values_moead)
+    spread_values_per_dataset_nsga.append(spread_values_nsga)
+    spread_values_per_dataset_nspso.append(spread_values_nspso)
+
+positions = np.arange(1, len(datasets) + 1)
+offset = 0.25
 
 plt.boxplot(
-    spread_values_per_dataset, labels=["100", "150", "200", "250"], patch_artist=True
+    spread_values_per_dataset_moead,
+    positions=positions - offset,
+    widths=0.2,
+    patch_artist=True,
+    boxprops=dict(facecolor="red", alpha=0.5),
+    medianprops=dict(color="black"),
+)
+plt.boxplot(
+    spread_values_per_dataset_nsga,
+    positions=positions,
+    widths=0.2,
+    patch_artist=True,
+    boxprops=dict(facecolor="blue", alpha=0.5),
+    medianprops=dict(color="black"),
+)
+plt.boxplot(
+    spread_values_per_dataset_nspso,
+    positions=positions + offset,
+    widths=0.2,
+    patch_artist=True,
+    boxprops=dict(facecolor="green", alpha=0.5),
+    medianprops=dict(color="black"),
 )
 
 plt.ylabel("Spread Delta Value")
 plt.xlabel("Number of Sensors")
+plt.xticks(positions, ["100", "150", "200", "250"])
+plt.legend(["MOEA/D", "NSGA-II", "NSPSO"], loc="best")
 plt.show()

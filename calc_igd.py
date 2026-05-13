@@ -30,10 +30,12 @@ def load_data(file):
 
 moead_igd_mean = []
 nsga_igd_mean = []
+nspso_igd_mean = []
 
 for dataset in datasets:
     moead_igd_values = []
     nsga_igd_values = []
+    nspso_igd_values = []
 
     for i in range(num_subdatasets):
         true_pareto_front = load_data(f"{base_link}/approx/{dataset}_{i}.csv")
@@ -48,21 +50,29 @@ for dataset in datasets:
             nsga_pareto_front = load_data(
                 f"{base_link}/nsga/nsga_{dataset}_{i}_{run}.csv"
             )
+            nspso_pareto_front = load_data(
+                f"{base_link}/nspso/nspso_{dataset}_{i}_{run}.csv"
+            )
 
             norm_moead_pareto_front = normalize(moead_pareto_front, min_vals, max_vals)
             norm_nsga_pareto_front = normalize(nsga_pareto_front, min_vals, max_vals)
+            norm_nspso_pareto_front = normalize(nspso_pareto_front, min_vals, max_vals)
 
             moead_igd = calculate_igd(norm_moead_pareto_front, norm_true_pareto_front)
             nsga_igd = calculate_igd(norm_nsga_pareto_front, norm_true_pareto_front)
+            nspso_igd = calculate_igd(norm_nspso_pareto_front, norm_true_pareto_front)
 
             moead_igd_values.append(moead_igd)
             nsga_igd_values.append(nsga_igd)
+            nspso_igd_values.append(nspso_igd)
 
     moead_igd_mean.append(np.mean(moead_igd_values))
     nsga_igd_mean.append(np.mean(nsga_igd_values))
+    nspso_igd_mean.append(np.mean(nspso_igd_values))
 
 print("MOEAD IGD Mean:", moead_igd_mean)
 print("NSGA IGD Mean:", nsga_igd_mean)
+print("NSPSO IGD Mean:", nspso_igd_mean)
 
 # Plot the results
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -74,11 +84,14 @@ bar1 = ax.bar(index, moead_igd_mean, bar_width, label="MOEA/D", color="red")
 bar2 = ax.bar(
     index + bar_width, nsga_igd_mean, bar_width, label="NSGA-II", color="blue"
 )
+bar3 = ax.bar(
+    index + 2 * bar_width, nspso_igd_mean, bar_width, label="NSPSO", color="green"
+)
 
 ax.set_xlabel("Dataset", fontsize=14)
 ax.set_ylabel("Mean IGD", fontsize=14)
-ax.set_title("Comparison of IGD values for MOEA/D and NSGA-II", fontsize=16)
-ax.set_xticks(index + bar_width / 2)
+ax.set_title("Comparison of IGD values for MOEA/D, NSGA-II, and NSPSO", fontsize=16)
+ax.set_xticks(index + bar_width)
 ax.set_xticklabels(datasets)
 ax.legend(fontsize=14)
 

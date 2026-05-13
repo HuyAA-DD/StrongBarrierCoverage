@@ -30,10 +30,12 @@ axes = axes.flatten()
 for idx, dataset in enumerate(datasets):
     moead_igd_mean = []
     nsga_igd_mean = []
+    nspso_igd_mean = []
 
     for i in range(num_subdatasets):
         moead_igd_values = []
         nsga_igd_values = []
+        nspso_igd_values = []
 
         true_pareto_front = load_data(f"{base_link}/approx/{dataset}_{i}.csv")
         min_vals = np.min(true_pareto_front, axis=0)
@@ -43,32 +45,40 @@ for idx, dataset in enumerate(datasets):
         for run in range(run_start, run_end):
             moead_pareto_front = load_data(f"{base_link}/moead/moead_{dataset}_{i}_{run}.csv")
             nsga_pareto_front = load_data(f"{base_link}/nsga/nsga_{dataset}_{i}_{run}.csv")
+            nspso_pareto_front = load_data(f"{base_link}/nspso/nspso_{dataset}_{i}_{run}.csv")
 
             normalized_moead_pareto_front = normalize(moead_pareto_front, min_vals, max_vals)
             normalized_nsga_pareto_front = normalize(nsga_pareto_front, min_vals, max_vals)
+            normalized_nspso_pareto_front = normalize(nspso_pareto_front, min_vals, max_vals)
 
             moead_igd = calculate_igd(normalized_moead_pareto_front, normalized_true_pareto_front)
             nsga_igd = calculate_igd(normalized_nsga_pareto_front, normalized_true_pareto_front)
+            nspso_igd = calculate_igd(normalized_nspso_pareto_front, normalized_true_pareto_front)
 
             moead_igd_values.append(moead_igd)
             nsga_igd_values.append(nsga_igd)
+            nspso_igd_values.append(nspso_igd)
 
-            print(f"Dataset: {dataset}, Subdataset: {i}, Run: {run}, MOEAD IGD: {moead_igd}, NSGA IGD: {nsga_igd}")
+            print(
+                f"Dataset: {dataset}, Subdataset: {i}, Run: {run}, MOEAD IGD: {moead_igd}, NSGA IGD: {nsga_igd}, NSPSO IGD: {nspso_igd}"
+            )
 
         moead_igd_mean.append(np.mean(moead_igd_values))
         nsga_igd_mean.append(np.mean(nsga_igd_values))
+        nspso_igd_mean.append(np.mean(nspso_igd_values))
 
     ax = axes[idx]
-    bar_width = 0.35
+    bar_width = 0.25
     index = np.arange(num_subdatasets)
 
     bar1 = ax.bar(index, moead_igd_mean, bar_width, label='MOEA/D', color='red')
     bar2 = ax.bar(index + bar_width, nsga_igd_mean, bar_width, label='NSGA-II', color='blue')
+    bar3 = ax.bar(index + 2 * bar_width, nspso_igd_mean, bar_width, label='NSPSO', color='green')
 
     ax.set_xlabel('Subdataset', fontsize=12)
     ax.set_ylabel('Mean IGD', fontsize=12)
     ax.set_title(f'Dataset {dataset}', fontsize=14)
-    ax.set_xticks(index + bar_width / 2)
+    ax.set_xticks(index + bar_width)
     ax.set_xticklabels([f"{i}" for i in range(num_subdatasets)])
     ax.legend()
 

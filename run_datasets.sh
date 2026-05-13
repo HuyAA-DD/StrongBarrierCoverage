@@ -62,7 +62,7 @@ run_dataset() {
 
   CUDA_VISIBLE_DEVICES="$gpu_id" "$PYTHON_BIN" moead_exp.py "$dataset" --gpu
   CUDA_VISIBLE_DEVICES="$gpu_id" "$PYTHON_BIN" nsga_exp.py "$dataset" --gpu
-  CUDA_VISIBLE_DEVICES="$gpu_id" "$PYTHON_BIN" nspso_exp.py "$dataset" --gpu
+  CUDA_VISIBLE_DEVICES="$gpu_id" "$PYTHON_BIN" nspso_exp4.py "$dataset" --gpu
 }
 
 for idx in "${!datasets[@]}"; do
