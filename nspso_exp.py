@@ -8,7 +8,7 @@ from gpu_utils import xp, has_gpu
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument("dataset", nargs="?", default="100_0")
+parser.add_argument("dataset", nargs="?", default="300_0")
 parser.add_argument("--gpu", action="store_true", help="use GPU backend when available")
 args = parser.parse_args()
 
@@ -33,7 +33,7 @@ gamma = 0.5
 barrier_length = 1000
 
 run_start = 0
-run_end = 10
+run_end = 1
 
 # ====== NSPSO params ======
 archive_max_size = pop_size
@@ -431,9 +431,9 @@ def main():
 
     for run in range(run_start, run_end):
         path = f"./result/r/nspso/nspso_{dataset}_{run}.txt"
-        if os.path.exists(path):
-            print("Skip", dataset, run)
-            continue
+        # if os.path.exists(path):
+        #     print("Skip", dataset, run)
+        #     continue
 
         print("-nspso run", run)
         time_start = time.time()
@@ -453,9 +453,6 @@ def main():
                 print("-nspso", generation)
 
             inertia_w = w_max - (w_max - w_min) * (generation / max_gen)
-
-            if archive:
-                calc_crowding_distance(archive)
 
             for p in swarm:
                 leader = choose_leader(archive)

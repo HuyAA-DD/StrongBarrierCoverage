@@ -2,14 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 dataset = 100
-algos = ["moead", "nsga"]
-subset = 7
+algos = ["moead", "nsga", "nspso"]
+subset = 9
 
 filenames = [f"./result/pareto/approx/{algo}_{dataset}_{subset}.csv" for algo in algos]
 
-colors = ["r", "b"]
-markers = ["o", "D"]
-lines = ["-", "--"]
+colors = ["r", "b" , "g"]
+markers = ["^", "v", "x"]
+lines = ["-", "--", "-"]
 plt.figure(figsize=(10, 9))
 
 for i, filename in enumerate(filenames):

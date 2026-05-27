@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 
 pop_size = 32
 max_generation = 10000
-dts = 200 #gốc là 250
+dts = 300 #gốc là 100
 datasets = [f"{dts}_{i}" for i in range(10)] #gốc là range 10
 num_runs = 10
 
 
 def load_data(file_name):
-    data = pd.read_csv(file_name, header=None, sep="\s+")
+    data = pd.read_csv(file_name, header=None, sep=r"\s+")
     z_nad = data.iloc[0].to_numpy().astype(float)
     aaa = data.iloc[1:].values.astype(float).tolist()
     return z_nad, aaa
@@ -56,9 +56,15 @@ nsga_files = [
     for i in range(num_runs)
 ]
 
+nspso_files = [
+    f"./result/f/nspso/nspso_{dataset}_{i}.csv" 
+    for dataset in datasets
+    for i in range(num_runs)
+]
+
 mean_hv_moead, std_hv_moead = calculate_statistics(moead_files)
 mean_hv_nsga, std_hv_nsga = calculate_statistics(nsga_files)
-
+mean_hv_nspso, std_hv_nspso = calculate_statistics(nspso_files)
 
 # Plot the results for both algorithms
 plt.figure(figsize=(12, 6))
@@ -81,9 +87,18 @@ plt.fill_between(
     alpha=0.3,
 )
 
+plt.plot(mean_hv_nspso, label="NSPSO Mean", color="green", linestyle="-", linewidth=2)
+plt.fill_between(
+    range(max_generation),
+    mean_hv_nspso - std_hv_nspso,
+    mean_hv_nspso + std_hv_nspso,
+    color="lightgreen",
+    alpha=0.3,
+)
+
 
 plt.xlabel("Generation", fontsize=14)
 plt.ylabel("Hyper Volume", fontsize=14)
-plt.legend(fontsize=20)
-plt.legend(loc="lower right")
+plt.legend(fontsize=20,loc="lower right")
+#plt.legend(loc="lower right")
 plt.show()

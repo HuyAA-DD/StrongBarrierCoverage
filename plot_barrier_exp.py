@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 fileData = "./dataset/100_1.txt"
 x_corr = np.loadtxt(fileData, dtype=int)
 N = len(x_corr)
-N = 2
+#N = 2
 
 k = 2
 alpha = 0.7
 n_layers = 100
 primary_color = "forestgreen"
 
-radii = np.array([])
+radii = np.array([0, 0, 26, 0, 0, 0, 0, 0, 0, 3, 20, 0, 0, 0, 0, 19, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 26, 0, 0, 0, 29, 0, 0, 0, 5, 0, 0, 11, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 16, 0, 0, 0, 0, 0, 0, 39, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 28, 25, 17, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 30, 0, 0, 48, 0, 0, 0])
 fig, ax = plt.subplots(figsize=(10, 6))
 
 for i in range(N):
@@ -53,7 +53,7 @@ for i in range(N):
         ax.scatter(x_corr[i], 0, marker="x", color="black", s=10)
 
 ax.set_xlim(0, 1000)
-ax.set_ylim(-R_s - 1, R_s + 1)
+ax.set_ylim(-50, 50)
 ax.set_aspect("equal")
 plt.axis("off")
 plt.tight_layout()

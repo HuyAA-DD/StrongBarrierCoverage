@@ -2,8 +2,8 @@ import glob
 import numpy as np
 import pandas as pd
 
-datasets = ["100", "150", "200", "250"]
-algos = ["moead", "nsga"]
+datasets = ["100", "150", "200", "250", "300"]
+algos = ["moead", "nsga", "nspso"]
 
 
 def is_pareto_efficient(costs):

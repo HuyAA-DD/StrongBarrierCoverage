@@ -2,9 +2,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 dataset = "100"
-algo = "nspso"
-#algo = "nsga"
-subset = 0
+#algo = "nspso"
+algo = "nsga"
+#algo = "moead"
+subset = 1
 run = 0
 filename = f"./result/f/{algo}/{algo}_{dataset}_{subset}_{run}.csv"
 df = pd.read_csv(filename, sep=" ", header=None, skiprows=1)
